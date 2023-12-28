@@ -15,7 +15,7 @@ public partial class FilledSurvey
 
     public int? OptionId { get; set; }
 
-    public virtual Option Option { get; set; }
+    public virtual Option? Option { get; set; }
 
     public virtual Survey? Survey { get; set; }
 

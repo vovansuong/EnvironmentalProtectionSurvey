@@ -21,7 +21,11 @@ public partial class Project2Context : DbContext
 
     public virtual DbSet<Faq> Faqs { get; set; }
 
+    public virtual DbSet<FilledContest> FilledContests { get; set; }
+
     public virtual DbSet<FilledSurvey> FilledSurveys { get; set; }
+
+    public virtual DbSet<FilledSurveyDetail> FilledSurveyDetails { get; set; }
 
     public virtual DbSet<ForgotPassword> ForgotPasswords { get; set; }
 
@@ -93,26 +97,61 @@ public partial class Project2Context : DbContext
                 .IsUnicode(false);
         });
 
-            modelBuilder.Entity<FilledSurvey>(entity =>
-            {
-                entity.ToTable("FilledSurvey");
+        modelBuilder.Entity<FilledContest>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__FilledCo__3214EC07E913497B");
 
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasColumnName("Created_At");
+            entity.ToTable("FilledContest");
 
-                entity.HasOne(d => d.Option).WithMany(p => p.FilledSurveys)
-                    .HasForeignKey(d => d.OptionId)
-                    .HasConstraintName("FK__FilledSur__Optio__4AB81AF0");
+            entity.HasOne(d => d.Contest).WithMany(p => p.FilledContests)
+                .HasForeignKey(d => d.ContestId)
+                .HasConstraintName("FK__FilledCon__Conte__3F115E1A");
 
-                entity.HasOne(d => d.Survey).WithMany(p => p.FilledSurveys)
-                    .HasForeignKey(d => d.SurveyId)
-                    .HasConstraintName("FK__FilledSur__Surve__49C3F6B7");
+            entity.HasOne(d => d.User).WithMany(p => p.FilledContests)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__FilledCon__UserI__40058253");
+        });
 
-                entity.HasOne(d => d.User).WithMany(p => p.FilledSurveys)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__FilledSur__UserI__48CFD27E");
-            });
+        modelBuilder.Entity<FilledSurvey>(entity =>
+        {
+            entity.ToTable("FilledSurvey");
+
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("Created_At");
+
+            entity.HasOne(d => d.Option).WithMany(p => p.FilledSurveys)
+                .HasForeignKey(d => d.OptionId)
+                .HasConstraintName("FK__FilledSur__Optio__4AB81AF0");
+
+            entity.HasOne(d => d.Survey).WithMany(p => p.FilledSurveys)
+                .HasForeignKey(d => d.SurveyId)
+                .HasConstraintName("FK__FilledSur__Surve__49C3F6B7");
+
+            entity.HasOne(d => d.User).WithMany(p => p.FilledSurveys)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__FilledSur__UserI__48CFD27E");
+        });
+
+        modelBuilder.Entity<FilledSurveyDetail>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("FilledSurveyDetails");
+
+            entity.Property(e => e.FilledSurveyCreate).HasColumnType("datetime");
+            entity.Property(e => e.OptionTitle)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.QuestionTitle)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.SurveyCreate).HasColumnType("datetime");
+            entity.Property(e => e.SurveyEnd).HasColumnType("datetime");
+            entity.Property(e => e.SurveyTitle)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+        });
 
         modelBuilder.Entity<ForgotPassword>(entity =>
         {
@@ -146,23 +185,23 @@ public partial class Project2Context : DbContext
                 .IsUnicode(false);
         });
 
-            modelBuilder.Entity<Option>(entity =>
-            {
-                entity.HasKey(e => e.Id).HasName("PK__Option__3214EC07856D4798");
+        modelBuilder.Entity<Option>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Option__3214EC07856D4798");
 
-                entity.ToTable("Option");
+            entity.ToTable("Option");
 
-                entity.Property(e => e.Answer)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-                entity.Property(e => e.Title)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+            entity.Property(e => e.Answer)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .IsUnicode(false);
 
-                entity.HasOne(d => d.Question).WithMany(p => p.Options)
-                    .HasForeignKey(d => d.QuestionId)
-                    .HasConstraintName("FK__Option__Question__46E78A0C");
-            });
+            entity.HasOne(d => d.Question).WithMany(p => p.Options)
+                .HasForeignKey(d => d.QuestionId)
+                .HasConstraintName("FK__Option__Question__46E78A0C");
+        });
 
         modelBuilder.Entity<PasswordReset>(entity =>
         {
@@ -205,6 +244,14 @@ public partial class Project2Context : DbContext
             entity.ToTable("QuestionContest");
 
             entity.Property(e => e.CorrectAnswer).HasMaxLength(255);
+
+            entity.Property(e => e.AnswerOptions)
+           .IsRequired()
+           .HasMaxLength(1000)
+            .HasConversion(
+               v => string.Join(',', v),
+               v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
+           );
 
             entity.HasOne(d => d.Contest).WithMany(p => p.QuestionContests)
                 .HasForeignKey(d => d.ContestId)

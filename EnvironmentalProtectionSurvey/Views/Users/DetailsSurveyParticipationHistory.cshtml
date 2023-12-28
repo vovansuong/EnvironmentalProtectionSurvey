@@ -1,22 +1,45 @@
-﻿@model IEnumerable<EnvironmentalProtectionSurvey.Models.FilledSurveyDetails>
+﻿@model IEnumerable<EnvironmentalProtectionSurvey.Models.FilledSurveyDetail>
 
-<h1>Survey Participation History</h1>
+@{
+    ViewData["Title"] = "Survey Participation History";
+}
 
-<p><strong>Survey Title:</strong> @Model.FirstOrDefault()?.Survey.Title</p>
-<p><strong>Participant:</strong> @Model.FirstOrDefault()?.FilledSurvey.User.UserName</p>
+<h2>Survey Participation History</h2>
 
-@foreach (var surveyDetail in Model)
+@if (Model != null && Model.Any())
 {
-    <div>
-        <h4>@surveyDetail.Question.Title</h4>
-        <p>
-            <strong>Selected Options:</strong>
-            @foreach (var selectedOption in surveyDetail.SelectedOptions)
+    @foreach (var filledSurveyDetails in Model)
+    {
+        <div>
+            @if (!string.IsNullOrEmpty(filledSurveyDetails.QuestionTitle) && !string.IsNullOrEmpty(filledSurveyDetails.OptionTitle))
             {
-                @selectedOption.Title
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>Option</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@filledSurveyDetails.QuestionTitle</td>
+                            <td>@filledSurveyDetails.OptionTitle</td>
+                        </tr>
+                    </tbody>
+                </table>
             }
-        </p>
-    </div>
+            else
+            {
+                <p>No questions and options found for this survey.</p>
+            }
+
+            <hr />
+        </div>
+    }
+}
+else
+{
+    <p>No filled surveys found for the specified conditions.</p>
 }
 
 <a asp-action="Index">Back to Survey List</a>

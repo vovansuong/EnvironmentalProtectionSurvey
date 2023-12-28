@@ -107,7 +107,67 @@
             <section id="services">
                 <div class="sectiontitle">
                     @*<p class="nospace font-xs">Mauris tempor aliquam venenatis</p>*@
-                    <h6 class="heading">List of current surveys and contests</h6>
+                    <h6 class="heading">List contests</h6>
+                </div>
+                <ul class="nospace group grid-3">
+
+                    @foreach (var contest in Model.ContestList)
+                    {
+
+                        <li class="one_third">
+                            <article>
+                                <a href="#"><i class="fas fa-spray-can"></i></a>
+                                <h6 class="heading">@contest.Title</h6>
+                                <footer>
+                                    @*<p>Students: @ViewBag.StudentParticipantCounts[index]</p>
+                                    <p>Teachers: @ViewBag.TeacherParticipantCounts[index]</p>*@
+
+                                    @if (Context.Session.GetString("username") == null)
+                                    {
+                                        <p>Please <a href="@Url.Action("Login", "Users")">login</a> to participate in this contest.</p>
+                                    }
+                                    else
+                                    {
+                                        if (DateTime.Now < contest.StartTime)
+                                        {
+                                            <p>The contest has not started yet</p>
+                                        }
+                                        else if (DateTime.Now > contest.EndTime)
+                                        {
+                                            <p>The contest has ended</p>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("TakeContest", "Contests", new { id = contest.Id })">More Details &raquo;</a>
+                                        }
+                                    }
+                                    <div>
+                                        <small>Start: @contest.StartTime</small>
+                                        <br>
+                                        <small>End: @contest.EndTime</small>
+                                    </div>
+
+                                </footer>
+                            </article>
+                        </li>
+                        @*index++;*@
+                    }
+                </ul>
+            </section>
+            <!-- ################################################################################################ -->
+            <!-- / main body -->
+            <div class="clear"></div>
+        </main>
+    </div>
+    <hr />
+    <div class="wrapper row3">
+        <main class="hoc container clear">
+            <!-- main body -->
+            <!-- ################################################################################################ -->
+            <section id="services">
+                <div class="sectiontitle">
+                    @*<p class="nospace font-xs">Mauris tempor aliquam venenatis</p>*@
+                    <h6 class="heading">List of current surveys</h6>
                 </div>
                 <ul class="nospace group grid-3">
                    
@@ -131,7 +191,18 @@
                                     }
                                     else
                                     {
-                                        <a href="@Url.Action("TakeSurvey", "Home", new { id = survey.Id })">More Details &raquo;</a>
+                                        if (DateTime.Now < survey.CreatedAt)
+                                        {
+                                            <p>The survey has not started yet, please come back later</p>
+                                        }
+                                        else if (DateTime.Now > survey.EndAt)
+                                        {
+                                            <p>The survey has ended</p>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("TakeSurvey", "Home", new { id = survey.Id })">More Details &raquo;</a>
+                                        }
                                     }
                                     <div>
                                         <small>Start: @survey.CreatedAt</small>

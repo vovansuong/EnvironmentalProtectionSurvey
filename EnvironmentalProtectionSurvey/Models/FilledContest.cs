@@ -3,17 +3,15 @@ using System.Collections.Generic;
 
 namespace EnvironmentalProtectionSurvey.Models;
 
-public partial class QuestionContest
+public partial class FilledContest
 {
     public int Id { get; set; }
 
     public int? ContestId { get; set; }
 
-    public string QuestionText { get; set; } = null!;
-
-    public List<string> AnswerOptions { get; set; } = null!;
-
-    public string CorrectAnswer { get; set; } = null!;
+    public int? UserId { get; set; }
 
     public virtual Contest? Contest { get; set; }
+
+    public virtual User? User { get; set; }
 }

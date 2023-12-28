@@ -25,11 +25,11 @@
                     @Html.DisplayFor(modelItem => item.CreatedAt)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Survey.Title)
+                    @Html.DisplayFor(modelItem => item.Survey!.Title)
                 </td>
-                <td>
-                    <a asp-action="DetailsSurveyParticipationHistory" asp-route-surveyId="@item.Survey.Id">Details</a>
-                </td>
+               @* <td>
+                    <a asp-action="DetailsSurveyParticipationHistory" asp-route-surveyId="@item.Survey!.Id">Details</a>
+                </td>*@
             </tr>
         }
     </tbody>

@@ -15,22 +15,46 @@ namespace EnvironmentalProtectionSurvey.Controllers
         public IActionResult Index()
         {
             //lay ra user đăng nhâp 
+            DateTime currentDate = DateTime.Now;
+
             var username = HttpContext.Session.GetString("username");
             var user = _context.Users.FirstOrDefault(u=>u.UserName == username);
             var news = _context.News.ToList();
+            // Lọc những cuộc thi còn hạn
+            var contests = _context.Contests
+                .Where(c => c.StartTime <= currentDate && c.EndTime >= currentDate)
+                .OrderByDescending(c=>c.Id)
+                .ToList();
             List<Survey> survey;
             if (user == null)
             {
-                survey = _context.Surveys.Where(s => s.IsVisible == null).Include(s => s.Questions).ThenInclude(q => q.Options).ToList();
-               
-            }else if(user.Role == "Admin")
-            {
-                survey = _context.Surveys.Where(s => s.IsVisible == null).Include(s => s.Questions).ThenInclude(q => q.Options).ToList();
 
+                survey = _context.Surveys
+                    .Where(s => s.IsVisible == null && s.CreatedAt <= currentDate && (s.EndAt == null || s.EndAt >= currentDate))
+                    .OrderByDescending(s => s.Id)
+                    .Include(s => s.Questions)
+                        .ThenInclude(q => q.Options)
+                    .ToList();
+            }
+            else if(user.Role == "Admin")
+            {
+
+                survey = _context.Surveys
+                    .Where(s => s.IsVisible == null && s.CreatedAt <= currentDate && (s.EndAt == null || s.EndAt >= currentDate))
+                    .OrderByDescending(s => s.Id)
+                    .Include(s => s.Questions)
+                    .ThenInclude(q => q.Options)
+                    .ToList();
             }
             else
             {
-                 survey = _context.Surveys.Where(s => s.IsVisible == null).Include(s => s.Questions).ThenInclude(q => q.Options).Where(s => s.UserType == user!.Role || s.UserType == "All").ToList();
+
+                survey = _context.Surveys
+                    .Where(s => s.IsVisible == null && s.UserType == user!.Role || s.UserType == "All" && s.CreatedAt <= currentDate && (s.EndAt == null || s.EndAt >= currentDate))
+                    .OrderByDescending(s => s.Id)
+                    .Include(s => s.Questions)
+                        .ThenInclude(q => q.Options)
+                    .ToList();
 
             }
             List<int> studentCounts = new List<int>();
@@ -69,7 +93,8 @@ namespace EnvironmentalProtectionSurvey.Controllers
             var viewModel = new NewsSurveyViewModel
             {
                 NewsList = news,
-                SurveyList = survey
+                SurveyList = survey, 
+                ContestList = contests
             };
             return View(viewModel);
         }
@@ -113,7 +138,7 @@ namespace EnvironmentalProtectionSurvey.Controllers
         public IActionResult TakeSurvey(int id, List<int> selectedOptionIds)
         {
             var username = HttpContext.Session.GetString("username");
-            var user = _context.Users.FirstOrDefault(u=>u.UserName == username);
+            var user = _context.Users.FirstOrDefault(u => u.UserName == username);
 
 
             var survey = _context.Surveys
@@ -126,7 +151,7 @@ namespace EnvironmentalProtectionSurvey.Controllers
                 return NotFound();
             }
 
-            foreach( var item in selectedOptionIds )
+            foreach (var item in selectedOptionIds)
             {
                 var FilledSurvey = new FilledSurvey
                 {

@@ -1,18 +1,17 @@
-﻿@model IEnumerable<EnvironmentalProtectionSurvey.Models.Question>
+﻿@model IEnumerable<EnvironmentalProtectionSurvey.Models.Contest>
 
 @{
-    ViewData["Title"] = "Questions";
+    ViewData["Title"] = "Contest";
     Layout = "~/Views/Shared/_LayoutBE.cshtml";
 }
-
 <nav class="navbar default-layout">
     <div class="navbar-menu-wrapper d-flex align-items-top">
-        <h1>Questions</h1>
+        <h1>Contest</h1>
     </div>
 </nav>
 
 <p>
-    <a asp-action="Create" class="btn btn-outline-success"><span class="btn-label"><i class="fa fa-plus"></i></span>Create New Questions</a>
+    <a asp-action="Create" class="btn btn-outline-success"><span class="btn-label"><i class="fa fa-plus"></i></span>Create New Contest</a>
 </p>
 
 <div class="table-responsive mt-1">
@@ -23,10 +22,10 @@
                     @Html.DisplayNameFor(model => model.Title)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.CorrectAnswer)
+                    @Html.DisplayNameFor(model => model.StartTime)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Survey)
+                    @Html.DisplayNameFor(model => model.EndTime)
                 </th>
                 <th></th>
             </tr>
@@ -39,13 +38,14 @@
                         @Html.DisplayFor(modelItem => item.Title)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.CorrectAnswer)
+                        @Html.DisplayFor(modelItem => item.StartTime)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Survey.Title)
+                        @Html.DisplayFor(modelItem => item.EndTime)
                     </td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-success"><span class="btn-label"><i class="fa fa-eye-slash"></i></span>View Question</a>
+                        <a asp-action="TakeContest" asp-route-id="@item.Id" class="btn btn-outline-info"><span class="btn-label"><i class="fa fa-eye"></i></span>Take Contest</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-success"><span class="btn-label"><i class="fa fa-info"></i></span>Info</a>
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning"><span class="btn-label"><i class="fa fa-edit"></i></span>Edit</a>
                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger"><span class="btn-label"><i class="fa fa-trash"></i></span>Delete</a>
                     </td>
